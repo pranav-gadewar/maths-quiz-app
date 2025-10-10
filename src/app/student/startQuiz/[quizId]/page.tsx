@@ -1,8 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+// ✘ [ERROR] Could not resolve "next/navigation" - Removed this import
+// import { useRouter } from "next/navigation"; 
 import { supabase } from "@/lib/supabaseClient";
+
+// Define the shape of the props that Next.js passes to the page
+type PageProps = {
+  params: {
+    quizId: string;
+  };
+};
 
 type Quiz = {
   id: string;
@@ -14,14 +22,15 @@ type Quiz = {
   time_limit: number;
 };
 
+// Define the shape of the data returned from the Supabase query
 type SupabaseQuizData = Omit<Quiz, "total_questions"> & {
-  questions?: { id: string }[];
+  questions: { id: string }[];
 };
 
-export default function StartQuizPage() {
-  const router = useRouter();
-  const params = useParams();
-  const quizId = params?.quizId as string; // safely assert quizId
+// Use the PageProps type for the component props
+export default function StartQuizPage({ params }: PageProps) {
+  // const router = useRouter(); // Replaced with window.location.href
+  const { quizId } = params;
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +50,7 @@ export default function StartQuizPage() {
         setLoading(false);
         return;
       }
-
+      
       const quizData = data as SupabaseQuizData;
 
       setQuiz({
@@ -67,10 +76,10 @@ export default function StartQuizPage() {
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-gray-900">
         <p className="text-xl">Quiz not found.</p>
         <button
-          onClick={() => router.push("/student/viewQuizzes")}
+          onClick={() => window.location.href = "/student/dashboard"}
           className="mt-4 px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
         >
-          Back to Quizzes
+          Back to Dashboard
         </button>
       </div>
     );
@@ -86,7 +95,7 @@ export default function StartQuizPage() {
           {quiz.description}
         </p>
 
-        <div className="mt-8 flex justify-center gap-6">
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
           <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-300 font-semibold">
             Level: {quiz.level || "N/A"}
           </span>
@@ -100,17 +109,17 @@ export default function StartQuizPage() {
 
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-6">
           <button
-            onClick={() => router.push(`/student/quiz/${quiz.id}`)}
+            onClick={() => window.location.href = `/student/quiz/${quiz.id}`}
             className="px-8 py-4 bg-blue-600 hover:bg-blue-700 transition-colors rounded-xl font-bold shadow-lg text-lg"
           >
             Start Quiz
           </button>
 
           <button
-            onClick={() => router.push("/student/viewQuizzes")}
+            onClick={() => window.location.href = "/student/dashboard"}
             className="px-8 py-4 bg-gray-600 hover:bg-gray-700 transition-colors rounded-xl font-semibold shadow-lg text-lg"
           >
-            Back to Quizzes
+            Go to Dashboard
           </button>
         </div>
 
@@ -121,3 +130,4 @@ export default function StartQuizPage() {
     </div>
   );
 }
+
