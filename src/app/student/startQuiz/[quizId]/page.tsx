@@ -1,17 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-// ✘ [ERROR] Could not resolve "next/navigation" - Removed this import
-// import { useRouter } from "next/navigation"; 
 import { supabase } from "@/lib/supabaseClient";
 
-// Define the shape of the props that Next.js passes to the page
-type PageProps = {
-  params: {
-    quizId: string;
-  };
-};
-
+// ✅ Define the shape of a quiz
 type Quiz = {
   id: string;
   title: string;
@@ -22,14 +14,17 @@ type Quiz = {
   time_limit: number;
 };
 
-// Define the shape of the data returned from the Supabase query
+// ✅ Supabase returns questions array separately
 type SupabaseQuizData = Omit<Quiz, "total_questions"> & {
   questions: { id: string }[];
 };
 
-// Use the PageProps type for the component props
-export default function StartQuizPage({ params }: PageProps) {
-  // const router = useRouter(); // Replaced with window.location.href
+// ✅ Accept params directly as a prop
+export default function StartQuizPage({
+  params,
+}: {
+  params: { quizId: string };
+}) {
   const { quizId } = params;
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -50,12 +45,12 @@ export default function StartQuizPage({ params }: PageProps) {
         setLoading(false);
         return;
       }
-      
+
       const quizData = data as SupabaseQuizData;
 
       setQuiz({
         ...quizData,
-        total_questions: quizData.questions ? quizData.questions.length : 0,
+        total_questions: quizData.questions?.length ?? 0,
       });
 
       setLoading(false);
@@ -76,7 +71,7 @@ export default function StartQuizPage({ params }: PageProps) {
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-gray-900">
         <p className="text-xl">Quiz not found.</p>
         <button
-          onClick={() => window.location.href = "/student/dashboard"}
+          onClick={() => (window.location.href = "/student/dashboard")}
           className="mt-4 px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
         >
           Back to Dashboard
@@ -100,23 +95,23 @@ export default function StartQuizPage({ params }: PageProps) {
             Level: {quiz.level || "N/A"}
           </span>
           <span className="px-4 py-2 bg-green-600/30 rounded-full text-green-300 font-semibold">
-            Questions: {quiz.total_questions || 0}
+            Questions: {quiz.total_questions}
           </span>
           <span className="px-4 py-2 bg-purple-600/30 rounded-full text-purple-300 font-semibold">
-            Time Limit: {quiz.time_limit || 0} min
+            Time Limit: {quiz.time_limit} min
           </span>
         </div>
 
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-6">
           <button
-            onClick={() => window.location.href = `/student/quiz/${quiz.id}`}
+            onClick={() => (window.location.href = `/student/quiz/${quiz.id}`)}
             className="px-8 py-4 bg-blue-600 hover:bg-blue-700 transition-colors rounded-xl font-bold shadow-lg text-lg"
           >
             Start Quiz
           </button>
 
           <button
-            onClick={() => window.location.href = "/student/dashboard"}
+            onClick={() => (window.location.href = "/student/dashboard")}
             className="px-8 py-4 bg-gray-600 hover:bg-gray-700 transition-colors rounded-xl font-semibold shadow-lg text-lg"
           >
             Go to Dashboard
@@ -130,4 +125,3 @@ export default function StartQuizPage({ params }: PageProps) {
     </div>
   );
 }
-
