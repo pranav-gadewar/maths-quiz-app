@@ -52,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-6">
       <div className="absolute top-6 left-6 text-white">
-        <Link href="/">&lbarr; back to home</Link>
+        <Link href="/" className="hover:underline">back to home</Link>
       </div>
       <form
         onSubmit={handleLogin}
