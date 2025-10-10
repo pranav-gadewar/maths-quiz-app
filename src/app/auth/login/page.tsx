@@ -51,6 +51,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-6">
+      <div className="absolute top-6 left-6 text-white">
+        <Link href="/">&lbarr; back to home</Link>
+      </div>
       <form
         onSubmit={handleLogin}
         className="bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 text-white transition-all duration-300 hover:shadow-blue-500/20"
