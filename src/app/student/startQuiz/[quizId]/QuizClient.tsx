@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 
+// Quiz type
 type Quiz = {
   id: string;
   title: string;
@@ -12,17 +14,19 @@ type Quiz = {
   time_limit: number;
 };
 
-type QuizClientProps = {
+type Props = {
   quiz: Quiz | null;
 };
 
-export default function QuizClient({ quiz }: QuizClientProps) {
+export default function QuizClient({ quiz }: Props) {
+  const router = useRouter();
+
   if (!quiz) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-gray-900">
         <p className="text-xl">Quiz not found.</p>
         <button
-          onClick={() => (window.location.href = "/student/dashboard")}
+          onClick={() => router.push("/student/dashboard")}
           className="mt-4 px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
         >
           Back to Dashboard
@@ -56,14 +60,14 @@ export default function QuizClient({ quiz }: QuizClientProps) {
 
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-6">
           <button
-            onClick={() => (window.location.href = `/student/quiz/${quiz.id}`)}
+            onClick={() => router.push(`/student/quiz/${quiz.id}`)}
             className="px-8 py-4 bg-blue-600 hover:bg-blue-700 transition-colors rounded-xl font-bold shadow-lg text-lg"
           >
             Start Quiz
           </button>
 
           <button
-            onClick={() => (window.location.href = "/student/dashboard")}
+            onClick={() => router.push("/student/dashboard")}
             className="px-8 py-4 bg-gray-600 hover:bg-gray-700 transition-colors rounded-xl font-semibold shadow-lg text-lg"
           >
             Go to Dashboard

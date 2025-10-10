@@ -1,6 +1,19 @@
 import QuizClient from "./QuizClient";
 import { supabase } from "@/lib/supabaseClient";
 
+// Define the Quiz type
+type Quiz = {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  active: boolean;
+  total_questions: number;
+  time_limit: number;
+  questions?: { id: string }[];
+};
+
+// Server component: fetches quiz and passes to client
 export default async function StartQuizPage({
   params,
 }: {
@@ -8,22 +21,15 @@ export default async function StartQuizPage({
 }) {
   const { quizId } = params;
 
-  // Fetch quiz server-side
   const { data, error } = await supabase
     .from("quizzes")
     .select("*, questions(id)")
     .eq("id", quizId)
     .single();
 
-  if (error || !data) {
-    // Pass null to client component if quiz not found
-    return <QuizClient quiz={null} />;
-  }
+  const quiz = data
+    ? { ...data, total_questions: data.questions?.length ?? 0 }
+    : null;
 
-  const quizData = {
-    ...data,
-    total_questions: data.questions?.length ?? 0,
-  };
-
-  return <QuizClient quiz={quizData} />;
+  return <QuizClient quiz={quiz} />;
 }
