@@ -100,7 +100,8 @@ export default function AddQuizPage() {
         if (q.answers.length !== 4)
           throw new Error("Each question must have exactly 4 answers.");
         const correctIndex = q.answers.findIndex((a) => a.isCorrect);
-        if (correctIndex === -1) throw new Error("Each question must have one correct answer.");
+        if (correctIndex === -1)
+          throw new Error("Each question must have one correct answer.");
 
         const { data: questionData, error: questionError } = await supabase
           .from("questions")
@@ -137,11 +138,14 @@ export default function AddQuizPage() {
           ],
         },
       ]);
-    } catch (err) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
+      // ✅ FIX: Explicitly type `err` as `any` to inspect it, resolving the linter error.
+      // This also fixes a bug where Supabase error messages were being hidden.
+    } catch (err: any) {
+      console.error("Error adding quiz:", err); // Good for debugging
+      if (err && typeof err === "object" && "message" in err) {
+        setErrorMsg(err.message as string);
       } else {
-        setErrorMsg("Something went wrong");
+        setErrorMsg("An unknown error occurred. Please try again.");
       }
     }
 
@@ -150,7 +154,7 @@ export default function AddQuizPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto mt-5 p-8  bg-white rounded-2xl shadow-lg">
+      <div className="max-w-4xl mx-auto mt-5 p-8  bg-white rounded-2xl shadow-lg">
         {/* Button to go back to dashboard */}
         <a
           href="/admin/dashboard"
@@ -160,13 +164,23 @@ export default function AddQuizPage() {
         </a>
         <h1 className="text-3xl font-bold mb-6 text-gray-800">Add New Quiz</h1>
 
-        {successMsg && <p className="bg-green-100 text-green-800 p-2 rounded mb-4">{successMsg}</p>}
-        {errorMsg && <p className="bg-red-100 text-red-800 p-2 rounded mb-4">{errorMsg}</p>}
+        {successMsg && (
+          <p className="bg-green-100 text-green-800 p-2 rounded mb-4">
+            {successMsg}
+          </p>
+        )}
+        {errorMsg && (
+          <p className="bg-red-100 text-red-800 p-2 rounded mb-4">
+            {errorMsg}
+          </p>
+        )}
 
         <form onSubmit={handleAddQuiz} className="space-y-6">
           {/* Quiz Info */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Title</label>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Title
+            </label>
             <input
               type="text"
               value={title}
@@ -177,7 +191,9 @@ export default function AddQuizPage() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Description</label>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -187,7 +203,9 @@ export default function AddQuizPage() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Level</label>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Level
+            </label>
             <select
               value={level}
               onChange={(e) => setLevel(e.target.value)}
@@ -242,7 +260,9 @@ export default function AddQuizPage() {
                       <input
                         type="text"
                         value={a.text}
-                        onChange={(e) => updateAnswerText(qIndex, aIndex, e.target.value)}
+                        onChange={(e) =>
+                          updateAnswerText(qIndex, aIndex, e.target.value)
+                        }
                         placeholder={`Answer ${["A", "B", "C", "D"][aIndex]}`}
                         required
                         className="flex-1 border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -250,6 +270,7 @@ export default function AddQuizPage() {
                       <label className="flex items-center gap-1">
                         <input
                           type="radio"
+                          name={`correct-answer-${qIndex}`}
                           checked={a.isCorrect}
                           onChange={() => toggleCorrectAnswer(qIndex, aIndex)}
                         />
@@ -274,8 +295,9 @@ export default function AddQuizPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg shadow transition ${loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg shadow transition ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
             {loading ? "Adding Quiz..." : "Add Quiz"}
           </button>
