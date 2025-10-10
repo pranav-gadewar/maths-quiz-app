@@ -14,7 +14,13 @@ type Quiz = {
   time_limit: number;
 };
 
-export default function StartQuizPage({ params }: { params: { quizId: string } }) {
+type PageProps = {
+  params: {
+    quizId: string;
+  };
+};
+
+export default function StartQuizPage({ params }: PageProps) {
   const router = useRouter();
   const quizId = params.quizId;
 
