@@ -19,12 +19,14 @@ type SupabaseQuizData = Omit<Quiz, "total_questions"> & {
   questions: { id: string }[];
 };
 
-// ✅ Accept params directly as a prop
-export default function StartQuizPage({
-  params,
-}: {
-  params: { quizId: string };
-}) {
+// ✅ Props type for StartQuizPage
+type StartQuizPageProps = {
+  params: {
+    quizId: string;
+  };
+};
+
+export default function StartQuizPage({ params }: StartQuizPageProps) {
   const { quizId } = params;
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
