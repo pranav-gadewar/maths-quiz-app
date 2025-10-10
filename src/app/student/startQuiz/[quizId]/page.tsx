@@ -1,8 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+
+// ✅ Define the shape of props passed to a Next.js page component
+type PageProps = {
+  params: {
+    quizId: string;
+  };
+};
 
 type Quiz = {
   id: string;
@@ -14,10 +21,15 @@ type Quiz = {
   time_limit: number;
 };
 
-export default function StartQuizPage() {
+// Define a specific type for the data returned from Supabase for better safety
+type SupabaseQuizData = Omit<Quiz, "total_questions"> & {
+  questions: { id: string }[];
+};
+
+// ✅ Accept `params` as a prop to get the quizId
+export default function StartQuizPage({ params }: PageProps) {
   const router = useRouter();
-  const params = useParams();
-  const quizId = params?.quizId as string; // Type assertion since params may be undefined
+  const { quizId } = params; // Get quizId directly from props
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,9 +50,11 @@ export default function StartQuizPage() {
         return;
       }
 
+      const quizData = data as SupabaseQuizData;
+
       setQuiz({
-        ...data,
-        total_questions: data.questions ? data.questions.length : 0,
+        ...quizData,
+        total_questions: quizData.questions ? quizData.questions.length : 0,
       });
       setLoading(false);
     };
@@ -75,7 +89,9 @@ export default function StartQuizPage() {
           {quiz.title}
         </h1>
 
-        <p className="text-gray-300 text-lg md:text-xl mt-6 text-center">{quiz.description}</p>
+        <p className="text-gray-300 text-lg md:text-xl mt-6 text-center">
+          {quiz.description}
+        </p>
 
         <div className="mt-8 flex justify-center gap-6">
           <span className="px-4 py-2 bg-blue-600/30 rounded-full text-blue-300 font-semibold">
