@@ -80,6 +80,9 @@ export default function StudentResultsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-8 text-white">
+      <div className="mb-6">
+        <a href="/student/dashboard" className="text-blue-400 hover:underline">&larr; Back to Dashboard</a>
+      </div>
       <h1 className="text-4xl font-bold text-center mb-10">
         📊 Your Quiz History
       </h1>
