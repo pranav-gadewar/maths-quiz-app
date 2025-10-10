@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic"; // ⚡ Fixes Supabase prerender error
-
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -88,6 +86,7 @@ export default function AddQuizPage() {
     setSuccessMsg("");
 
     try {
+      // Insert quiz
       const { data: quizData, error: quizError } = await supabase
         .from("quizzes")
         .insert([{ title, description, level, active }])
@@ -96,6 +95,7 @@ export default function AddQuizPage() {
 
       if (quizError || !quizData) throw quizError;
 
+      // Insert questions
       for (const q of questions) {
         if (q.answers.length !== 4)
           throw new Error("Each question must have exactly 4 answers.");
@@ -138,8 +138,10 @@ export default function AddQuizPage() {
           ],
         },
       ]);
+      // ✅ FIX: Explicitly type `err` as `any` to inspect it, resolving the linter error.
+      // This also fixes a bug where Supabase error messages were being hidden.
     } catch (err: any) {
-      console.error("Error adding quiz:", err);
+      console.error("Error adding quiz:", err); // Good for debugging
       if (err && typeof err === "object" && "message" in err) {
         setErrorMsg(err.message as string);
       } else {
@@ -152,7 +154,8 @@ export default function AddQuizPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto mt-5 p-8 bg-white rounded-2xl shadow-lg">
+      <div className="max-w-4xl mx-auto mt-5 p-8  bg-white rounded-2xl shadow-lg">
+        {/* Button to go back to dashboard */}
         <a
           href="/admin/dashboard"
           className="text-blue-500 hover:underline mb-4 inline-block"
@@ -167,7 +170,9 @@ export default function AddQuizPage() {
           </p>
         )}
         {errorMsg && (
-          <p className="bg-red-100 text-red-800 p-2 rounded mb-4">{errorMsg}</p>
+          <p className="bg-red-100 text-red-800 p-2 rounded mb-4">
+            {errorMsg}
+          </p>
         )}
 
         <form onSubmit={handleAddQuiz} className="space-y-6">

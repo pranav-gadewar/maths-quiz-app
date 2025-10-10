@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
-// Quiz type
+// ✅ Define the shape of a quiz
 type Quiz = {
   id: string;
   title: string;
@@ -14,26 +14,72 @@ type Quiz = {
   time_limit: number;
 };
 
-type Props = {
-  quiz: Quiz | null;
+// ✅ Supabase returns questions array separately
+type SupabaseQuizData = Omit<Quiz, "total_questions"> & {
+  questions: { id: string }[];
 };
 
-export default function QuizClient({ quiz }: Props) {
-  const router = useRouter();
+// ✅ Props type for StartQuizPage
+type StartQuizPageProps = {
+  params: {
+    quizId: string;
+  };
+};
 
-  if (!quiz) {
+export default function StartQuizPage({ params }: StartQuizPageProps) {
+  const { quizId } = params;
+
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      if (!quizId) return;
+
+      const { data, error } = await supabase
+        .from("quizzes")
+        .select(`*, questions:questions(id)`)
+        .eq("id", quizId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching quiz:", error.message);
+        setLoading(false);
+        return;
+      }
+
+      const quizData = data as SupabaseQuizData;
+
+      setQuiz({
+        ...quizData,
+        total_questions: quizData.questions?.length ?? 0,
+      });
+
+      setLoading(false);
+    };
+
+    fetchQuiz();
+  }, [quizId]);
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white bg-gray-900">
+        Loading quiz...
+      </div>
+    );
+
+  if (!quiz)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-gray-900">
         <p className="text-xl">Quiz not found.</p>
         <button
-          onClick={() => router.push("/student/dashboard")}
+          onClick={() => (window.location.href = "/student/dashboard")}
           className="mt-4 px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
         >
           Back to Dashboard
         </button>
       </div>
     );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center px-4">
@@ -60,14 +106,14 @@ export default function QuizClient({ quiz }: Props) {
 
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-6">
           <button
-            onClick={() => router.push(`/student/quiz/${quiz.id}`)}
+            onClick={() => (window.location.href = `/student/quiz/${quiz.id}`)}
             className="px-8 py-4 bg-blue-600 hover:bg-blue-700 transition-colors rounded-xl font-bold shadow-lg text-lg"
           >
             Start Quiz
           </button>
 
           <button
-            onClick={() => router.push("/student/dashboard")}
+            onClick={() => (window.location.href = "/student/dashboard")}
             className="px-8 py-4 bg-gray-600 hover:bg-gray-700 transition-colors rounded-xl font-semibold shadow-lg text-lg"
           >
             Go to Dashboard
