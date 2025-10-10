@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 
+// Quiz type
 type Quiz = {
   id: string;
   title: string;

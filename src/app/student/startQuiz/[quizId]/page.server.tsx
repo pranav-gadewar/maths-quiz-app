@@ -1,8 +1,24 @@
 import QuizClient from "./QuizClient";
 import { supabase } from "@/lib/supabaseClient";
 
-// Server component fetches the quiz and passes it to the client
-export default async function StartQuizPage({ params }: any) {
+// Define Quiz type
+type Quiz = {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  active: boolean;
+  total_questions: number;
+  time_limit: number;
+  questions?: { id: string }[];
+};
+
+// Server component: fetches quiz and passes to client
+export default async function StartQuizPage({
+  params,
+}: {
+  params: { quizId: string };
+}) {
   const { quizId } = params;
 
   const { data, error } = await supabase
