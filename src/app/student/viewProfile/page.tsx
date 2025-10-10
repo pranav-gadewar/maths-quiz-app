@@ -81,22 +81,22 @@ export default function ViewProfilePage() {
 
       {/* Profile Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <EnhancedField icon={<User size={18} />} label="Name" value={profile.name || "N/A"} />
+        <EnhancedField icon={<User size={18} />} label="Name" value={profile.name ?? "N/A"} />
         <EnhancedField icon={<Mail size={18} />} label="Email" value={profile.email} />
-        <EnhancedField icon={<Phone size={18} />} label="Phone" value={profile.phone || "N/A"} />
-        <EnhancedField icon={<Shield size={18} />} label="Role" value={profile.role || "N/A"} />
+        <EnhancedField icon={<Phone size={18} />} label="Phone" value={profile.phone ?? "N/A"} />
+        <EnhancedField icon={<Shield size={18} />} label="Role" value={profile.role ?? "N/A"} />
         <EnhancedField icon={<Calendar size={18} />} label="Account Created" value={new Date(profile.created_at).toLocaleDateString()} />
         {profile.xp != null && (
-          <EnhancedField icon={<Award size={18} />} label="XP" value={profile.xp.toString()} />
+          <EnhancedField icon={<Award size={18} />} label="XP" value={(profile.xp ?? 0).toString()} />
         )}
         {profile.completed != null && (
-          <EnhancedField icon={<Award size={18} />} label="Quizzes Completed" value={profile.completed.toString()} />
+          <EnhancedField icon={<Award size={18} />} label="Quizzes Completed" value={(profile.completed ?? 0).toString()} />
         )}
         {profile.accuracy && (
           <EnhancedField icon={<Award size={18} />} label="Accuracy" value={`${profile.accuracy}%`} />
         )}
         {profile.rank != null && (
-          <EnhancedField icon={<Award size={18} />} label="Rank" value={`#${profile.rank}`} />
+          <EnhancedField icon={<Award size={18} />} label="Rank" value={`#${profile.rank ?? 0}`} />
         )}
       </div>
 
