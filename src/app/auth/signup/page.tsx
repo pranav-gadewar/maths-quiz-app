@@ -26,7 +26,7 @@ export default function SignupPage() {
         setLoading(true);
 
         // Sign up the user
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
             email,
             password,
         });
@@ -62,7 +62,7 @@ export default function SignupPage() {
 
         setLoading(false);
 
-        // Redirect to student dashboard
+        // Redirect to login page
         router.push("/auth/login");
     };
 

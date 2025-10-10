@@ -137,8 +137,12 @@ export default function AddQuizPage() {
           ],
         },
       ]);
-    } catch (err: any) {
-      setErrorMsg(err.message || "Something went wrong");
+    } catch (err) {
+      if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else {
+        setErrorMsg("Something went wrong");
+      }
     }
 
     setLoading(false);
@@ -270,9 +274,8 @@ export default function AddQuizPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg shadow transition ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
+            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg shadow transition ${loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
           >
             {loading ? "Adding Quiz..." : "Add Quiz"}
           </button>

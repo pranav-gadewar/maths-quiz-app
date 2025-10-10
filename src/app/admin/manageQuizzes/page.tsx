@@ -4,9 +4,19 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Pencil, Trash2, ToggleLeft, ToggleRight, Plus } from "lucide-react";
 import Link from "next/link";
+import type { PostgrestError } from "@supabase/supabase-js";
+
+type Quiz = {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  active: boolean;
+  created_at: string | null;
+};
 
 export default function ManageQuizzesPage() {
-  const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -16,7 +26,7 @@ export default function ManageQuizzesPage() {
 
   const fetchQuizzes = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error }: { data: Quiz[] | null; error: PostgrestError | null } = await supabase
       .from("quizzes")
       .select("id, title, description, level, active, created_at")
       .order("created_at", { ascending: false });
@@ -32,7 +42,7 @@ export default function ManageQuizzesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this quiz?")) return;
 
-    const { error } = await supabase.from("quizzes").delete().eq("id", id);
+    const { error }: { error: PostgrestError | null } = await supabase.from("quizzes").delete().eq("id", id);
     if (error) {
       alert("Error deleting quiz: " + error.message);
     } else {
@@ -41,7 +51,7 @@ export default function ManageQuizzesPage() {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    const { error } = await supabase
+    const { error }: { error: PostgrestError | null } = await supabase
       .from("quizzes")
       .update({ active: !current })
       .eq("id", id);
@@ -119,7 +129,7 @@ export default function ManageQuizzesPage() {
                     </button>
                   </td>
                   <td className="py-3 px-4 text-center text-gray-500">
-                    {new Date(quiz.created_at).toLocaleDateString()}
+                    {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString() : "-"}
                   </td>
                   <td className="py-3 px-4 text-center flex items-center justify-center gap-3">
                     <Link

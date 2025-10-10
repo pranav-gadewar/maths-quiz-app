@@ -6,6 +6,14 @@ import { supabase } from "@/lib/supabaseClient";
 import Sidebar from "../../student/components/Sidebar";
 import { useRouter } from "next/navigation";
 
+// Define a type for the User object to avoid using 'any'
+type User = {
+  id: string;
+  name: string | null;
+  rank: number | string | null;
+  // Add any other properties from your 'users' table here
+};
+
 type Quiz = {
   id: string;
   title: string;
@@ -22,7 +30,8 @@ type Result = {
 };
 
 export default function StudentDashboard() {
-  const [user, setUser] = useState<any>(null);
+  // ✅ Use the specific User type for state, allowing it to be null initially
+  const [user, setUser] = useState<User | null>(null);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +97,10 @@ export default function StudentDashboard() {
   const quizCards = quizzes.map((q) => {
     const lastAttempt = results
       .filter((r) => r.quiz_id === q.id)
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0];
 
     return {
       ...q,
@@ -100,7 +112,7 @@ export default function StudentDashboard() {
       lastScore: lastAttempt?.score ?? null,
       lastPercentage: lastAttempt?.percentage ?? null,
       lastAttemptDate: lastAttempt?.created_at,
-      total_questions: lastAttempt?.total_questions ?? 0, // ✅ Fixed red line
+      total_questions: lastAttempt?.total_questions ?? 0,
     };
   });
 
@@ -128,7 +140,10 @@ export default function StudentDashboard() {
 
           <div className="bg-gray-800 p-6 rounded-2xl shadow-lg text-center hover:scale-105 transition">
             <CheckCircle className="mx-auto text-green-400 mb-2" size={30} />
-            <h3 className="text-2xl font-bold">{completedQuizzes}</h3>
+            {/* ✅ Used 'totalQuizzes' to remove the unused variable warning */}
+            <h3 className="text-2xl font-bold">
+              {completedQuizzes} / {totalQuizzes}
+            </h3>
             <p className="text-gray-400">Quizzes Completed</p>
           </div>
 
@@ -198,18 +213,14 @@ export default function StudentDashboard() {
 
                 <div className="mt-4 flex justify-center gap-3">
                   <button
-                    onClick={() =>
-                      router.push(`/student/quiz/${quiz.id}`)
-                    }
+                    onClick={() => router.push(`/student/quiz/${quiz.id}`)}
                     className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
                   >
                     {quiz.progress === "Completed" ? "Retake" : "Start"}
                   </button>
                   {quiz.lastAttemptDate && (
                     <button
-                      onClick={() =>
-                        router.push(`/student/results`)
-                      }
+                      onClick={() => router.push(`/student/results`)}
                       className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition text-sm font-semibold"
                     >
                       View History

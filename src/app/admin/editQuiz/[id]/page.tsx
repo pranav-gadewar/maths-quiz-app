@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { Trash2, Plus } from "lucide-react";
+import type { PostgrestError } from "@supabase/supabase-js";
 
 type Question = {
   id: string;
@@ -15,10 +16,19 @@ type Question = {
   correct_option: string;
 };
 
+type Quiz = {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  active: boolean;
+  created_at?: string;
+};
+
 export default function EditQuizPage() {
   const router = useRouter();
   const params = useParams();
-  const quizId = params.id;
+  const quizId = params?.id as string;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -37,7 +47,7 @@ export default function EditQuizPage() {
 
   // Fetch quiz info
   const fetchQuiz = async () => {
-    const { data, error } = await supabase
+    const { data, error }: { data: Quiz | null; error: PostgrestError | null } = await supabase
       .from("quizzes")
       .select("*")
       .eq("id", quizId)
@@ -56,7 +66,7 @@ export default function EditQuizPage() {
 
   // Fetch quiz questions
   const fetchQuestions = async () => {
-    const { data, error } = await supabase
+    const { data, error }: { data: Question[] | null; error: PostgrestError | null } = await supabase
       .from("questions")
       .select("*")
       .eq("quiz_id", quizId)
@@ -65,7 +75,7 @@ export default function EditQuizPage() {
     if (error) {
       console.error("Error fetching questions:", error.message);
     } else if (data) {
-      setQuestions(data as Question[]);
+      setQuestions(data);
     }
   };
 
@@ -77,7 +87,7 @@ export default function EditQuizPage() {
     }
 
     setSaving(true);
-    const { error } = await supabase
+    const { error }: { error: PostgrestError | null } = await supabase
       .from("quizzes")
       .update({ title, description, level, active })
       .eq("id", quizId);
@@ -91,15 +101,16 @@ export default function EditQuizPage() {
     }
   };
 
-  // Update a question
+  // Update a question in state
   const handleQuestionChange = (id: string, field: keyof Question, value: string) => {
     setQuestions((prev) =>
       prev.map((q) => (q.id === id ? { ...q, [field]: value } : q))
     );
   };
 
+  // Update question in Supabase
   const handleUpdateQuestion = async (q: Question) => {
-    const { error } = await supabase
+    const { error }: { error: PostgrestError | null } = await supabase
       .from("questions")
       .update({
         question_text: q.question_text,
@@ -121,7 +132,7 @@ export default function EditQuizPage() {
   const handleDeleteQuestion = async (id: string) => {
     if (!confirm("Are you sure you want to delete this question?")) return;
 
-    const { error } = await supabase.from("questions").delete().eq("id", id);
+    const { error }: { error: PostgrestError | null } = await supabase.from("questions").delete().eq("id", id);
     if (error) {
       alert("Error deleting question: " + error.message);
     } else {
@@ -130,20 +141,24 @@ export default function EditQuizPage() {
   };
 
   const handleAddQuestion = async () => {
-    const { data, error } = await supabase.from("questions").insert({
-      quiz_id: quizId,
-      question_text: "New Question",
-      option_a: "A",
-      option_b: "B",
-      option_c: "C",
-      option_d: "D",
-      correct_option: "A",
-    }).select().single();
+    const { data, error }: { data: Question | null; error: PostgrestError | null } = await supabase
+      .from("questions")
+      .insert({
+        quiz_id: quizId,
+        question_text: "New Question",
+        option_a: "A",
+        option_b: "B",
+        option_c: "C",
+        option_d: "D",
+        correct_option: "A",
+      })
+      .select()
+      .single();
 
     if (error) {
       alert("Error adding question: " + error.message);
-    } else {
-      setQuestions([...questions, data as Question]);
+    } else if (data) {
+      setQuestions([...questions, data]);
     }
   };
 
@@ -195,8 +210,6 @@ export default function EditQuizPage() {
           />
           Active
         </label>
-
-        
       </div>
 
       {/* Questions */}

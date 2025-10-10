@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Pencil, Trash2 } from "lucide-react";
-import Link from "next/link";
 
-type QuizReport = {
+type Quiz = {
   id: string;
   title: string;
   description: string;
   level: string;
   active: boolean;
-  created_at: string;
+  created_at: string | null;
+};
+
+type QuizReport = Quiz & {
   question_count: number;
-  // You can add more fields like total_attempts if you track them
 };
 
 export default function QuizReportsPage() {
@@ -30,19 +30,27 @@ export default function QuizReportsPage() {
 
     try {
       // Fetch quizzes
-      const { data: quizzes, error } = await supabase
-        .from("quizzes")
-        .select("id, title, description, level, active, created_at");
+      const { data, error } = await supabase
+  .from("quizzes")
+  .select("id, title, description, level, active, created_at");
 
-      if (error) throw error;
+if (error) throw error;
+
+// Type assertion here
+const quizzes: Quiz[] = data as Quiz[];
+
 
       // Fetch question count for each quiz
-      const reportsWithQuestions = await Promise.all(
-        (quizzes || []).map(async (quiz: any) => {
-          const { count: question_count } = await supabase
+      const reportsWithQuestions: QuizReport[] = await Promise.all(
+        (quizzes || []).map(async (quiz) => {
+          const { count: question_count, error: countError } = await supabase
             .from("questions")
             .select("*", { count: "exact", head: true })
             .eq("quiz_id", quiz.id);
+
+          if (countError) {
+            console.error("Error fetching question count for quiz:", quiz.id, countError.message);
+          }
 
           return {
             ...quiz,
@@ -61,9 +69,9 @@ export default function QuizReportsPage() {
 
   return (
     <div className="max-w-6xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-lg">
-        <div className="mb-6">
-            <a href="/admin/dashboard" className="text-blue-500 hover:underline">&larr; Back to Dashboard</a>
-        </div>
+      <div className="mb-6">
+        <a href="/admin/dashboard" className="text-blue-500 hover:underline">&larr; Back to Dashboard</a>
+      </div>
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Quiz Reports</h1>
 
       {errorMsg && (
@@ -103,7 +111,7 @@ export default function QuizReportsPage() {
                   </td>
                   <td className="py-3 px-4 text-center">{quiz.question_count}</td>
                   <td className="py-3 px-4 text-center text-gray-500">
-                    {new Date(quiz.created_at).toLocaleDateString()}
+                    {quiz.created_at ? new Date(quiz.created_at).toLocaleDateString() : "-"}
                   </td>
                 </tr>
               ))}

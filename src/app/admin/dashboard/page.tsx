@@ -7,6 +7,16 @@ import Sidebar from "../../../components/admin/Sidebar";
 import { Users, BookOpen, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+// ✅ Added a proper Quiz type (to replace `any`)
+type Quiz = {
+  id: string;
+  title: string;
+  active: boolean;
+  created_at?: string;
+  total_questions?: number;
+  description?: string;
+};
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -16,7 +26,9 @@ export default function AdminDashboard() {
     totalStudents: 0,
     activeQuizzes: 0,
   });
-  const [recentQuizzes, setRecentQuizzes] = useState<any[]>([]);
+
+  // ✅ Fixed ESLint error by using `Quiz[]` instead of `any[]`
+  const [recentQuizzes, setRecentQuizzes] = useState<Quiz[]>([]);
 
   // Fetch admin name
   useEffect(() => {
@@ -37,11 +49,16 @@ export default function AdminDashboard() {
   // Fetch stats and recent quizzes
   useEffect(() => {
     const fetchStats = async () => {
-      const { data: quizzes } = await supabase.from("quizzes").select("*");
-      const { data: students } = await supabase
+      const { data: quizzes, error: quizError } = await supabase
+        .from("quizzes")
+        .select("*");
+      const { data: students, error: studentError } = await supabase
         .from("users")
         .select("*")
         .eq("role", "student");
+
+      if (quizError) console.error("Error fetching quizzes:", quizError);
+      if (studentError) console.error("Error fetching students:", studentError);
 
       const activeQuizzes = quizzes?.filter((q) => q.active).length || 0;
 
@@ -51,7 +68,7 @@ export default function AdminDashboard() {
         activeQuizzes,
       });
 
-      // ✅ Fixed red underline issue
+      // ✅ Type-safe slice of recent quizzes
       setRecentQuizzes((quizzes ?? []).slice(-5).reverse());
     };
 
@@ -105,9 +122,8 @@ export default function AdminDashboard() {
           <button
             onClick={handleLogout}
             disabled={loading}
-            className={`bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
+            className={`bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition ${loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
           >
             {loading ? "Logging out..." : "Logout"}
           </button>
@@ -164,11 +180,10 @@ export default function AdminDashboard() {
                   >
                     <span className="font-medium">{quiz.title}</span>
                     <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        quiz.active
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${quiz.active
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
-                      }`}
+                        }`}
                     >
                       {quiz.active ? "Active" : "Inactive"}
                     </span>
