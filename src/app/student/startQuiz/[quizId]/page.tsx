@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 type Quiz = {
@@ -14,16 +14,10 @@ type Quiz = {
   time_limit: number;
 };
 
-// Just type params manually
-type StartQuizPageProps = {
-  params: {
-    quizId: string;
-  };
-};
-
-export default function StartQuizPage({ params }: StartQuizPageProps) {
+export default function StartQuizPage() {
   const router = useRouter();
-  const quizId = params.quizId;
+  const params = useParams();
+  const quizId = params?.quizId as string; // Type assertion since params may be undefined
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
