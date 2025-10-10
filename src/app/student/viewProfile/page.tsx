@@ -86,16 +86,16 @@ export default function ViewProfilePage() {
         <EnhancedField icon={<Phone size={18} />} label="Phone" value={profile.phone || "N/A"} />
         <EnhancedField icon={<Shield size={18} />} label="Role" value={profile.role || "N/A"} />
         <EnhancedField icon={<Calendar size={18} />} label="Account Created" value={new Date(profile.created_at).toLocaleDateString()} />
-        {profile.xp !== undefined && (
+        {profile.xp != null && (
           <EnhancedField icon={<Award size={18} />} label="XP" value={profile.xp.toString()} />
         )}
-        {profile.completed !== undefined && (
+        {profile.completed != null && (
           <EnhancedField icon={<Award size={18} />} label="Quizzes Completed" value={profile.completed.toString()} />
         )}
         {profile.accuracy && (
           <EnhancedField icon={<Award size={18} />} label="Accuracy" value={`${profile.accuracy}%`} />
         )}
-        {profile.rank !== undefined && (
+        {profile.rank != null && (
           <EnhancedField icon={<Award size={18} />} label="Rank" value={`#${profile.rank}`} />
         )}
       </div>
