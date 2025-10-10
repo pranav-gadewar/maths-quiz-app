@@ -1,15 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-
-// ✅ Define the shape of props passed to a Next.js page component
-type PageProps = {
-  params: {
-    quizId: string;
-  };
-};
 
 type Quiz = {
   id: string;
@@ -21,15 +14,14 @@ type Quiz = {
   time_limit: number;
 };
 
-// Define a specific type for the data returned from Supabase for better safety
 type SupabaseQuizData = Omit<Quiz, "total_questions"> & {
-  questions: { id: string }[];
+  questions?: { id: string }[];
 };
 
-// ✅ Accept `params` as a prop to get the quizId
-export default function StartQuizPage({ params }: PageProps) {
+export default function StartQuizPage() {
   const router = useRouter();
-  const { quizId } = params; // Get quizId directly from props
+  const params = useParams();
+  const quizId = params?.quizId as string; // safely assert quizId
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +48,7 @@ export default function StartQuizPage({ params }: PageProps) {
         ...quizData,
         total_questions: quizData.questions ? quizData.questions.length : 0,
       });
+
       setLoading(false);
     };
 
