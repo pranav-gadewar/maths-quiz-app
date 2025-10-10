@@ -75,7 +75,7 @@ export default function ViewProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto mt-12 p-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-2xl border border-gray-200">
-      <h1 className="text-4xl font-extrabold text-gray-800 mb-10 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+      <h1 className="text-4xl font-extrabold text-gray-800 mb-10 text-center bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
         My Profile
       </h1>
 
