@@ -14,13 +14,14 @@ type Quiz = {
   time_limit: number;
 };
 
-type PageProps = {
+// Just type params manually
+type StartQuizPageProps = {
   params: {
     quizId: string;
   };
 };
 
-export default function StartQuizPage({ params }: PageProps) {
+export default function StartQuizPage({ params }: StartQuizPageProps) {
   const router = useRouter();
   const quizId = params.quizId;
 
@@ -31,7 +32,6 @@ export default function StartQuizPage({ params }: PageProps) {
     const fetchQuiz = async () => {
       if (!quizId) return;
 
-      // Fetch quiz info along with total questions count
       const { data, error } = await supabase
         .from("quizzes")
         .select(`*, questions:questions(id)`)
