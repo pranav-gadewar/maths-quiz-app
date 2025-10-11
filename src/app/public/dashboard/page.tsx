@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -23,12 +24,19 @@ export default function Dashboard() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl w-full mb-10">
           {quizzes.map((quiz) => (
-            <div key={quiz.id} className="bg-gray-800 rounded-xl p-6 shadow-md hover:bg-gray-700 transition">
+            <div
+              key={quiz.id}
+              className="bg-gray-800 rounded-xl p-6 shadow-md hover:bg-gray-700 transition"
+            >
               <h2 className="text-xl font-semibold mb-2">{quiz.title}</h2>
               <p className="text-gray-400 mb-4">{quiz.description}</p>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg">
+
+              <Link
+                href={`/auth/login`}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg inline-block"
+              >
                 Start Quiz
-              </button>
+              </Link>
             </div>
           ))}
         </div>
