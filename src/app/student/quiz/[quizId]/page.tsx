@@ -105,37 +105,35 @@ export default function QuizPage() {
   };
 
   const handleSubmit = async () => {
-    if (!userId) return alert("User not authenticated!");
-    if (Object.keys(answers).length !== questions.length) {
-      return alert("Please answer all questions before submitting!");
-    }
+  if (!userId) return alert("User not authenticated!");
+  if (Object.keys(answers).length !== questions.length) {
+    return alert("Please answer all questions before submitting!");
+  }
 
-    setSubmitting(true);
+  setSubmitting(true);
 
-    // Count correct answers
-    let correctCount = 0;
-    questions.forEach((q) => {
-      if (answers[q.id] === q.correct_option) correctCount += 1;
-    });
+  let correctCount = 0;
+  questions.forEach((q) => {
+    if (answers[q.id] === q.correct_option) correctCount += 1;
+  });
 
-    // Insert into results table
-    const { error } = await supabase.from("results").insert({
-      quiz_id: quiz.id,
-      total_questions: questions.length,
-      score: correctCount,
-      user_id: userId, // Matches the new schema
-      // created_at and percentage are handled automatically by the database
-    });
+  const { error } = await supabase.from("results").insert({
+    quiz_id: quiz.id,
+    total_questions: questions.length,
+    score: correctCount,
+    user_id: userId,
+  });
 
-    setSubmitting(false);
+  setSubmitting(false);
 
-    if (error) {
-      alert("Error saving results: " + error.message);
-    } else {
-      alert(`Quiz submitted! You got ${correctCount} / ${questions.length}`);
-      router.push("/student/viewQuizzes");
-    }
-  };
+  if (error) {
+    alert("Error saving results: " + error.message);
+  } else {
+    // ✅ Redirect to result page instead of viewQuizzes
+    router.push(`/student/result?quizId=${quiz.id}`);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center px-4 py-12">
