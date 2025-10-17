@@ -17,7 +17,6 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg("");
 
-    // Supabase Auth sign in
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -42,7 +41,6 @@ export default function LoginPage() {
       return;
     }
 
-    // Redirect based on role
     if (userRole.role === "admin") router.push("/admin/dashboard");
     else router.push("/student/dashboard");
 
@@ -50,10 +48,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-6 relative">
+      {/* Back Link */}
       <div className="absolute top-6 left-6 text-white">
         <Link href="/" className="hover:underline">back to home</Link>
       </div>
+
       <form
         onSubmit={handleLogin}
         className="bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 text-white transition-all duration-300 hover:shadow-blue-500/20"
@@ -74,11 +74,11 @@ export default function LoginPage() {
         )}
 
         {/* Email Field */}
-        <div className="relative mb-6">
+        <div className="relative mb-6 w-full">
           <input
             type="email"
             id="email"
-            className="peer w-full px-4 py-3 bg-transparent border-b-2 border-gray-500 focus:border-blue-500 outline-none text-white placeholder-transparent"
+            className="peer w-full px-4 py-3 bg-transparent border-b-2 border-gray-500 text-white placeholder-transparent focus:outline-none focus:border-blue-400 transition-all duration-300"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -86,18 +86,18 @@ export default function LoginPage() {
           />
           <label
             htmlFor="email"
-            className="absolute left-4 top-3 text-gray-400 text-sm transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-4 peer-focus:text-blue-400 peer-focus:text-sm"
+            className="absolute left-4 top-3 text-gray-400 text-sm transition-all duration-300 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:text-blue-400 peer-focus:text-sm bg-transparent px-1"
           >
             Email Address
           </label>
         </div>
 
         {/* Password Field */}
-        <div className="relative mb-8">
+        <div className="relative mb-8 w-full">
           <input
             type="password"
             id="password"
-            className="peer w-full px-4 py-3 bg-transparent border-b-2 border-gray-500 focus:border-purple-500 outline-none text-white placeholder-transparent"
+            className="peer w-full px-4 py-3 bg-transparent border-b-2 border-gray-500 text-white placeholder-transparent focus:outline-none focus:border-purple-400 transition-all duration-300"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -105,7 +105,7 @@ export default function LoginPage() {
           />
           <label
             htmlFor="password"
-            className="absolute left-4 top-3 text-gray-400 text-sm transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-4 peer-focus:text-purple-400 peer-focus:text-sm"
+            className="absolute left-4 top-3 text-gray-400 text-sm transition-all duration-300 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:text-purple-400 peer-focus:text-sm bg-transparent px-1"
           >
             Password
           </label>
