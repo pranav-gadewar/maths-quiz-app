@@ -27,7 +27,6 @@ export default function QuizHistoryPage() {
         return;
       }
 
-      // Fetch all quiz results for the logged-in user and join quiz titles
       const { data, error } = await supabase
         .from("results")
         .select(`
@@ -65,7 +64,7 @@ export default function QuizHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 text-gray-700">
         Loading your quiz history...
       </div>
     );
@@ -73,41 +72,55 @@ export default function QuizHistoryPage() {
 
   if (history.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-300">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 text-gray-600">
         You haven’t attempted any quizzes yet.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-8 text-white">
-        <div className="mb-6">
-            <Link href="/student/dashboard">
-                <span className="text-gray-300 hover:text-white font-medium cursor-pointer">Back to Dashboard</span>
-            </Link>
-        </div>
-      <h1 className="text-4xl font-bold text-center mb-10">📚 Quiz History</h1>
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 p-8 text-gray-800">
+      {/* Back to Dashboard */}
+      <div className="mb-6">
+        <Link href="/student/dashboard">
+          <span className="text-blue-600 hover:underline font-medium cursor-pointer">
+            ← Back to Dashboard
+          </span>
+        </Link>
+      </div>
 
-      <div className="max-w-5xl mx-auto bg-gray-800/80 rounded-2xl shadow-2xl p-6 overflow-x-auto">
+      {/* Page Title */}
+      <h1 className="text-4xl font-extrabold text-center mb-10 text-blue-700">
+        📚 Quiz History
+      </h1>
+
+      {/* Table */}
+      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 overflow-x-auto border border-gray-200">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-gray-600 text-gray-300">
-              <th className="p-3">Quiz Title</th>
-              <th className="p-3">Score</th>
-              <th className="p-3">Percentage</th>
-              <th className="p-3">Attempt Date</th>
+            <tr className="border-b border-gray-300 bg-gray-50 text-gray-700">
+              <th className="p-3 font-semibold">Quiz Title</th>
+              <th className="p-3 font-semibold">Score</th>
+              <th className="p-3 font-semibold">Percentage</th>
+              <th className="p-3 font-semibold">Attempt Date</th>
             </tr>
           </thead>
           <tbody>
             {history.map((quiz) => (
               <tr
                 key={quiz.id}
-                className="border-b border-gray-700 hover:bg-gray-700/50 transition"
+                className="border-b border-gray-200 hover:bg-blue-50 transition"
               >
                 <td className="p-3">{quiz.quiz_title}</td>
-                <td className="p-3">{quiz.score}/{quiz.total_questions}</td>
-                <td className="p-3">{quiz.percentage?.toFixed(1)}%</td>
-                <td className="p-3">{new Date(quiz.created_at).toLocaleString()}</td>
+                <td className="p-3">
+                  {quiz.score}/{quiz.total_questions}
+                </td>
+                <td className="p-3 text-blue-600 font-semibold">
+                  {quiz.percentage?.toFixed(1)}%
+                </td>
+                <td className="p-3 text-gray-600">
+                  {new Date(quiz.created_at).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>

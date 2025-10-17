@@ -119,7 +119,7 @@ export default function StudentDashboard() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 bg-gradient-to-b from-gray-700 via-gray-600 to-gray-700 text-white px-6 py-16">
+      <main className="flex-1 bg-gradient-to-b from-gray-700 via-gray-600 to-gray-700 text-white px-6 py-16 pt-24 md:ml-64">
         {/* Welcome Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
