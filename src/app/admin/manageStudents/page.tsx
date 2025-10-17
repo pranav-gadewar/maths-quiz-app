@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import Sidebar from "@/components/admin/Sidebar";
 
 interface Student {
   id: string;
@@ -52,59 +51,63 @@ export default function ManageStudentsPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
+    <div className="max-w-6xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-lg">
+      <div className="mb-6">
+        <a href="/admin/dashboard" className="text-blue-500 hover:underline">
+          &larr; Back to Dashboard
+        </a>
+      </div>
 
-      <main className="flex-1 bg-gray-100 p-8">
-        <h1 className="text-3xl font-bold mb-6">Manage Students</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage Students</h1>
 
-        {errorMsg && (
-          <p className="bg-red-100 text-red-800 p-2 rounded mb-4">{errorMsg}</p>
-        )}
+      {errorMsg && (
+        <p className="bg-red-100 text-red-800 p-3 rounded mb-4">{errorMsg}</p>
+      )}
 
-        {loading ? (
-          <p>Loading students...</p>
-        ) : students.length === 0 ? (
-          <p className="text-gray-500">No students registered yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded-lg shadow">
-              <thead>
-                <tr className="bg-gray-200 text-gray-700">
-                  <th className="py-3 px-6 text-left">Name</th>
-                  <th className="py-3 px-6 text-left">Email</th>
-                  <th className="py-3 px-6 text-left">Phone</th>
-                  <th className="py-3 px-6 text-left">Registered At</th>
-                  <th className="py-3 px-6 text-center">Actions</th>
+      {loading ? (
+        <p className="text-center text-gray-500">Loading students...</p>
+      ) : students.length === 0 ? (
+        <p className="text-center text-gray-600">No students registered yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-200 rounded-lg">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr>
+                <th className="py-3 px-4 text-left">Name</th>
+                <th className="py-3 px-4 text-left">Email</th>
+                <th className="py-3 px-4 text-left">Phone</th>
+                <th className="py-3 px-4 text-left">Registered At</th>
+                <th className="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((student) => (
+                <tr
+                  key={student.id}
+                  className="border-t border-gray-200 hover:bg-gray-50 transition"
+                >
+                  <td className="py-3 px-4 font-semibold">{student.name || "N/A"}</td>
+                  <td className="py-3 px-4 text-gray-600 truncate max-w-[250px]">
+                    {student.email}
+                  </td>
+                  <td className="py-3 px-4">{student.phone || "N/A"}</td>
+                  <td className="py-3 px-4">
+                    {new Date(student.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      onClick={() => handleDelete(student.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {students.map((student) => (
-                  <tr
-                    key={student.id}
-                    className="border-b hover:bg-gray-50 transition"
-                  >
-                    <td className="py-3 px-6">{student.name || "N/A"}</td>
-                    <td className="py-3 px-6">{student.email}</td>
-                    <td className="py-3 px-6">{student.phone || "N/A"}</td>
-                    <td className="py-3 px-6">
-                      {new Date(student.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="py-3 px-6 text-center">
-                      <button
-                        onClick={() => handleDelete(student.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </main>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

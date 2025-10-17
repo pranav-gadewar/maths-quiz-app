@@ -7,7 +7,6 @@ import Sidebar from "../../../components/admin/Sidebar";
 import { Users, BookOpen, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
-// ✅ Added a proper Quiz type (to replace `any`)
 type Quiz = {
   id: string;
   title: string;
@@ -26,11 +25,8 @@ export default function AdminDashboard() {
     totalStudents: 0,
     activeQuizzes: 0,
   });
-
-  // ✅ Fixed ESLint error by using `Quiz[]` instead of `any[]`
   const [recentQuizzes, setRecentQuizzes] = useState<Quiz[]>([]);
 
-  // Fetch admin name
   useEffect(() => {
     const fetchAdminName = async () => {
       const { data, error } = await supabase
@@ -38,15 +34,12 @@ export default function AdminDashboard() {
         .select("name")
         .eq("role", "admin")
         .single();
-
       if (data?.name) setAdminName(data.name);
       if (error) console.error("Error fetching admin name:", error);
     };
-
     fetchAdminName();
   }, []);
 
-  // Fetch stats and recent quizzes
   useEffect(() => {
     const fetchStats = async () => {
       const { data: quizzes, error: quizError } = await supabase
@@ -68,10 +61,8 @@ export default function AdminDashboard() {
         activeQuizzes,
       });
 
-      // ✅ Type-safe slice of recent quizzes
       setRecentQuizzes((quizzes ?? []).slice(-5).reverse());
     };
-
     fetchStats();
   }, []);
 
@@ -79,12 +70,7 @@ export default function AdminDashboard() {
     setLoading(true);
     const { error } = await supabase.auth.signOut();
     setLoading(false);
-
-    if (error) {
-      alert("Error logging out: " + error.message);
-      return;
-    }
-
+    if (error) return alert("Error logging out: " + error.message);
     router.push("/auth/login");
   };
 
@@ -111,9 +97,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen">
+      {/* Sidebar */}
       <Sidebar />
 
-      <main className="flex-1 bg-gray-100 p-8">
+      {/* Main content */}
+      <main className="flex-1 bg-gray-100 p-8 pt-20 md:ml-64 md:pt-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">
@@ -122,8 +110,9 @@ export default function AdminDashboard() {
           <button
             onClick={handleLogout}
             disabled={loading}
-            className={`bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition ${loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+            className={`bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
             {loading ? "Logging out..." : "Logout"}
           </button>
@@ -180,10 +169,11 @@ export default function AdminDashboard() {
                   >
                     <span className="font-medium">{quiz.title}</span>
                     <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${quiz.active
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        quiz.active
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
-                        }`}
+                      }`}
                     >
                       {quiz.active ? "Active" : "Inactive"}
                     </span>
